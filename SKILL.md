@@ -1,23 +1,26 @@
 ---
-name: ios-hig-feasibility
-description: Grounds iPhone/iOS product design and UX work in Apple Human Interface Guidelines technical capabilities and constraints — hard numeric limits (tap targets, type sizes, contrast ratios, Live Activity/widget dimensions, character counts, timing windows), platform capabilities (Live Activities, Dynamic Island, widgets, App Clips, notifications, App Intents/Siri, SharePlay, Sign in with Apple, In-App Purchase), and App-Store-review-risk patterns. Use whenever designing or critiquing an iPhone feature, screen, flow, notification, widget, Live Activity, permission/onboarding flow, or any iOS UI concept, to check what's actually technically feasible and shippable before committing to a design direction.
+name: iphone-duo-design
+description: Grounds iPhone Duo (Apple's foldable iPhone, dual displays + hinge) product design and UX work in Apple's Human Interface Guidelines — device poses, reserved camera/folding regions, split views, arrangement views, vertical toolbar/tab-bar placement, and exactly what differs from standard iPhone design vs. what carries over unchanged (accessibility, notifications, widgets, Live Activities, privacy, commerce). Use whenever designing or critiquing a feature, screen, or flow for iPhone Duo specifically, or deciding whether a design needs Duo-specific treatment at all, or scoping a design to work across both standard iPhone and Duo.
 ---
 
-# iOS/iPhone Design Feasibility (Apple HIG)
+# iPhone Duo Design Feasibility (Apple HIG)
 
-Use this skill to keep iPhone product-design and UX work anchored in what iOS actually supports — not just visual style, but hard technical constraints and platform capabilities from Apple's Human Interface Guidelines (HIG). The goal: catch infeasible design concepts *before* they're built, and know when a platform capability makes something possible that a designer might not realize is available.
+Use this skill to ground **iPhone Duo** (Apple's foldable iPhone — dual displays, front cameras on each, central hinge, added to the HIG on September 9, 2026) product-design and UX work in real platform capabilities and constraints, and to know precisely where Duo design differs from standard iPhone design versus where standard iOS guidance simply carries over.
+
+## Start here
+
+1. **[references/iphone-duo.md](references/iphone-duo.md)** — the primary reference. Device anatomy (outer/inner display + cameras), device poses, the four reserved regions, dynamic layouts, split views on Duo, arrangement views (split/overlay), vertical toolbar/tab-bar placement, and games — each split into Capabilities / Limitations / Design implications, cited to the source HIG page.
+2. **[references/standard-iphone-vs-duo.md](references/standard-iphone-vs-duo.md)** — the scoping guide. A carries-over-unchanged list, a side-by-side differences table, and scoping questions to ask before designing or reviewing any feature ("does this toolbar assumption break on Duo?", "is this a natural split-view candidate?", "does this only exist on one display?"). **Load this file whenever the task is to decide how much Duo-specific work a feature actually needs**, not just when designing something Duo already knows it needs.
 
 ## How to use this
 
-1. **Identify the topic(s)** the design touches (layout, a widget, a Live Activity, a permission prompt, a custom gesture, etc.).
-2. **Load the relevant reference file(s) below** — each is dense, factual, and organized as Capabilities / Limitations / Design implications, with the source HIG URL cited per topic so claims can be checked against the current page.
-3. **Apply it two ways:**
-   - **Critiquing a design**: flag anything that violates a stated hard limit (tap target size, character count, layout dimension, timing window, App-Store-review rule) as a concrete feasibility problem, not a style opinion — cite the specific constraint and its source.
-   - **Generating/ideating a design**: surface platform capabilities the person may not know about (e.g., Live Activities reaching Lock Screen + Dynamic Island + Apple Watch Smart Stack + CarPlay from one implementation; SF Symbols' built-in animation presets; the Location Button for one-time access) so the design takes advantage of what iOS actually offers instead of reinventing it.
-4. **Prefer a feasible alternative over a flat "no."** When a concept is infeasible (e.g., a live-updating widget, a tilt-to-navigate UI, a gesture-only action), say what's actually possible instead (periodic refresh + last-updated timestamp; motion input scoped to gameplay only; a button/menu fallback) rather than only stopping the idea.
-5. **Numbers are load-bearing.** Where a reference gives a specific number (44×44pt tap target, 200% Dynamic Type, 4.5:1 contrast, 8-hour Live Activity ceiling, 4 notification actions), treat it as a hard check, not a rough guideline.
+- **Critiquing a Duo design**: flag anything that violates a stated hard constraint (fixed-width layout, horizontal toolbar unmodified from standard iPhone, content ignoring a reserved region, a custom two-pane layout that should be a system split view) as a concrete feasibility problem — cite the specific rule and source.
+- **Generating/ideating for Duo**: lead with the platform capabilities that make Duo distinct (split view that expands/collapses automatically between displays, vertical toolbars with visibility-priority overflow, arrangement views for pose-driven pane management) rather than treating Duo as "iPhone but bigger."
+- **Deciding scope**: before assuming a feature needs bespoke Duo design work, run it through the scoping questions in standard-iphone-vs-duo.md — many features are Duo-agnostic (accessibility, notifications, widgets, commerce rules) and don't need re-design, only validation.
+- **Prefer a feasible alternative over a flat "no."** When a concept is infeasible as specified (a fixed-pixel-width mockup, a per-pose bespoke layout, navigation nested inside an arrangement view), say what's actually possible instead (size-class-driven layout, one adaptive layout via system containers, navigation wrapping the arrangement view) rather than only stopping the idea.
+- **Numbers and rules are load-bearing.** Where a reference gives a specific constraint (four reserved regions, vertical-axis item ordering, "don't override default bar placement"), treat it as a hard check, not a rough guideline.
 
-## Reference files
+## Supporting reference files (standard iOS baseline — still applies to Duo unless noted otherwise)
 
 | File | Covers |
 |---|---|
@@ -34,6 +37,8 @@ Use this skill to keep iPhone product-design and UX work anchored in what iOS ac
 
 ## Coverage gaps — do not fabricate
 
-Apple restructured the HIG site in 2025 and several previously-standalone pages now 404 on developer.apple.com: **Haptics, Camera, Lock Screen, Always-On Display, StandBy, Home Screen Quick Actions** no longer have independently retrievable dedicated pages (some content survives folded into the Widgets page — see references/notifications-widgets.md). If a question needs specifics for one of these topics beyond what's in the reference files, say the current HIG page for it could not be confirmed rather than inventing numbers, and suggest checking developer.apple.com/design/human-interface-guidelines directly.
+The Designing for iPhone Duo HIG page is brand new (added September 9, 2026) and, as of this research, is the **only** page with Duo-specific content — a direct check of Designing for iOS, Layout, Multitasking, and Live Activities found no Duo-specific updates yet, and a dedicated `arrangement-views` page does not exist (its content lives only inside the Duo page itself). Apple will likely expand Duo coverage into other HIG pages over time — if a question needs Duo-specific detail not present in references/iphone-duo.md, say it isn't confirmed yet rather than inventing it, and suggest checking developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo directly.
+
+Separately, Apple restructured the rest of the HIG site in 2025: **Haptics, Camera, Lock Screen, Always-On Display, StandBy, Home Screen Quick Actions** no longer have independently retrievable dedicated pages (some content survives folded into the Widgets page — see references/notifications-widgets.md).
 
 Reference content here is summarized/paraphrased from Apple's public HIG (developer.apple.com/design/human-interface-guidelines) as of September 2026, for internal design-feasibility use — always treat Apple's live HIG pages as the authoritative source of truth if a decision is high-stakes or the guidance may have since changed.
