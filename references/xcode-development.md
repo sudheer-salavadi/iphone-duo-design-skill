@@ -7,7 +7,7 @@ Sources: developer.apple.com/iphone-duo/ (developer hub) plus Apple's Sept 2026 
 
 **Capabilities**
 - Xcode 27.1 (beta) adds an **iPhone Duo simulator device** in Device Hub, with on-screen controls to open, close, rotate, and fold the simulated device — so poses can be checked without physical hardware once the beta ships.
-- A renamed/expanded app-modernization audit tool called **"appability"** ships with Xcode 27.1, now supporting SwiftUI in addition to UIKit, and iPhone Duo specifically — run it to audit whether an app follows the adaptive-layout practices in this file. It's the same tool referenced (under an earlier name) in Apple's "Modernize Your UIKit App" talk from WWDC26 ("Dubdub26").
+- Apple's own talk refers to a renamed/expanded **"appability"** app-modernization *skill* (its word) shipping with Xcode 27.1, now supporting SwiftUI in addition to UIKit, and iPhone Duo specifically. The exact mechanism (an Xcode-integrated tool? an automated audit pass? something else) wasn't spelled out in the talk — treat "run appability to check your app" as the right instinct, but confirm what it actually is once Xcode 27.1 ships rather than assuming it's a simple lint pass. It's the same capability referenced (under an earlier name) in Apple's "Modernize Your UIKit App" talk from WWDC26 ("Dubdub26").
 
 **Limitations**
 - No GA release date or release-notes page found as of this research; the (non-Duo) "Xcode 27 RC Release Notes" page was checked directly and contains zero mention of iPhone Duo, hinge, foldable, or Duo simulator support.
@@ -16,14 +16,14 @@ Sources: developer.apple.com/iphone-duo/ (developer hub) plus Apple's Sept 2026 
 
 **Design implications**
 - Any design review that assumes "we can just check this in Simulator" should first confirm Xcode 27.1 has actually shipped and been installed.
-- Run "appability" before treating a design as validated for Duo — it's a concrete, named tool for exactly this audit, not something to reinvent as a manual checklist.
+- Run "appability" before treating a design as validated for Duo — it's a concrete, named capability for exactly this audit, not something to reinvent as a manual checklist.
 
 ---
 
 ## SDK-Version-Dependent Behavior (important for scoping legacy vs. adapted apps)
 
 The *same app binary's* behavior on Duo depends on which SDK it was built against:
-- **No iOS 27 SDK** (older): closed → familiar iPhone size; open (inner display) → uses the space to the left of the status bar/camera area. Unadapted legacy behavior — still works, isn't Duo-aware.
+- **Built against a pre-iOS-27 SDK**: closed → familiar iPhone size; open (inner display) → uses the space to the left of the status bar/camera area. Unadapted legacy behavior — still works, isn't Duo-aware.
 - **iOS 27 SDK**: extends further onto the inner display but stops short of the status bar/camera area.
 - **iOS 27.1 SDK**: reaches the full inner-display edge, and standard nav/toolbar controls lay out **vertically** under the status bar — this is the behavior [iphone-duo.md](iphone-duo.md) and [vertical-toolbars.md](vertical-toolbars.md) describe.
 
@@ -40,7 +40,7 @@ The *same app binary's* behavior on Duo depends on which SDK it was built agains
 **Capabilities** — the full per-display, per-orientation size-class matrix:
 - **Outer display, portrait**: regular vertical / compact horizontal (same as any other iPhone).
 - **Outer display, landscape**: compact vertical / compact horizontal (same as any other iPhone).
-- **Inner display, any orientation**: **regular horizontal AND regular vertical** — the additional space is meant to support richer content like sidebars.
+- **Inner display, any orientation, full-screen**: **regular horizontal AND regular vertical** — the additional space is meant to support richer content like sidebars. This matrix describes a **full-screen** app; the talk doesn't state what size class applies in split-view multitasking (see below) — don't assume regular width still holds when the app only occupies half the inner display.
 
 ```swift
 // SwiftUI
@@ -53,7 +53,8 @@ traitCollection.verticalSizeClass
 ```
 
 **Limitations**
-- The **inner display does not honor an app's supported interface orientations** — orientation locks configured for the app simply don't apply there. The outer display behaves like any other iPhone (orientation locks apply normally), and Duo is explicitly called out as "a great opportunity to support landscape" for the tent/stand pose.
+- The same talk ("Prepare Your App for iPhone Duo") states both that **"the inner display doesn't honor your supported interface orientations"** (orientation locks configured for the app simply don't apply there) *and*, later, that **"iPhone Duo respects your supported interface orientations, but your app will scale on the inner display"** (see the `UIRequiresFullScreen` section below for that exact quote). These two statements sit in tension and the skill doesn't attempt to resolve them — the practical takeaway both agree on is: **don't drive layout decisions off interface orientation on the inner display; use size classes instead**, regardless of exactly what "respects" means for orientation locking itself.
+- The outer display behaves like any other iPhone (orientation locks apply normally there), and Duo is explicitly called out as "a great opportunity to support landscape" for the tent/stand pose.
 - Avoid checking interface orientation for layout decisions anywhere in the app — use size classes instead (same discipline as iPad idiom guidance).
 
 **Design implications**
@@ -118,7 +119,7 @@ TabView { … }
 tabBarController.sidebar.preferredPlacement = .sidebar
 ```
 
-**Safe areas** — foreground/interactive content should be placed within the safe area; background/full-bleed content may extend past it:
+**Safe areas** — navigation bars, toolbars, and tab bars lay out **outside** the safe area and automatically avoid system UI (status bar) and hardware (camera): horizontal bars provide top/bottom insets, vertical bars provide leading/trailing insets. This is *why* the asymmetric-inset handling below matters — a vertical bar's leading/trailing inset is what a naive "assume both sides are equal" calculation gets wrong. Foreground/interactive content should be placed within the safe area; background/full-bleed content may extend past it:
 
 ```swift
 // UIKit — align foreground content to the safe area
@@ -151,7 +152,7 @@ Layout margins are asymmetric the same way — this lets foreground content sit 
 
 ---
 
-## `UIRequiresFullScreen` — two sources, presented separately (do not silently pick one)
+## `UIRequiresFullScreen` — one primary-source statement, one unverified secondary claim (do not silently pick one)
 
 - **"Prepare Your App for iPhone Duo" (David Jackson, UI Frameworks)** states directly: *"iPhone Duo will continue to honor the `UIRequiresFullScreen` key, but your app will still resize when someone opens or closes their iPhone Duo. iPhone Duo respects your supported interface orientations, but your app will scale on the inner display, including in split view multitasking."* — i.e., the key is still honored, but it does **not** block open/close resizing.
 - A separate migration-guidance source (an earlier, secondary-source research pass citing a different Tech Talk) said to **remove** `UIRequiresFullScreen` because it "opts an app out of adaptive resizing entirely." This may describe a different, more complete tier of adaptation (e.g., full edge-to-edge vertical-bar behavior) that the key still blocks even though basic resizing isn't blocked — but this wasn't stated explicitly in either source.
@@ -190,7 +191,7 @@ struct CameraRootView: View {
 ```
 
 **Limitations**
-- On iPad, new windows/scenes can be created **at any time**. On iPhone Duo, **new windows/scenes can only be created on the inner display — never the outer** — a dynamic, Duo-unique restriction. The action to request a new scene (`UIWindowSceneActivationAction`, referred to in the talk as "the UI window scene activation action") **automatically hides itself when unavailable**, so the app doesn't need to manually gate the affordance.
+- On iPad, new windows/scenes can be created **at any time**. On iPhone Duo, **new windows/scenes can only be created on the inner display — never the outer** — a dynamic, Duo-unique restriction. The action to request a new scene (`UIWindowSceneActivationAction`, referred to in the talk as "the UI window scene activation action") **automatically hides itself when unavailable**, so the app doesn't need to manually gate the affordance visibility. Even so, the talk separately says to **handle errors when requesting new scenes** — the auto-hiding affordance reduces how often a request would fail, it doesn't guarantee a request made through some other path can't still fail.
 
 **Design implications**
 - An outer-display "second window" concept is not feasible as described — new scenes are inner-display-only, full stop. The one confirmed way to show something on the outer display while the inner display runs the main UI is the Camera Capture Accessory pattern specifically (camera apps only, so far).
@@ -221,10 +222,11 @@ struct InstrumentView: View {
 ```
 - **UIKit**: `UIHingeInteraction`, added via `UIView.addInteraction(_:)`.
 - `hinge.status` is `.closed` / `.partiallyOpen` / `.fullyOpen`; `hinge.angle` is a continuous `Angle`.
-- **Confirmed in two separate talks**: this API is for **interactions and effects** (e.g. a parallax effect, a pitch-bend/whammy-bar effect, a shutter-style camera control tied to fold angle) — **not for layout decisions.** Layout should use reserved regions / arrangement APIs (below), not raw hinge angle.
+- The two concrete examples actually given in the talks: an app-level **pitch-bend/whammy-bar effect** on a guitar app (code above), and a **system-level** example — the Lock Screen/opening wallpaper reacts to hinge angle with a zoom effect as the device opens (this second one is system UI behavior, not something a third-party app implements, but illustrates the intended category of use).
+- "Leverage Multiple Displays and Scenes on iPhone Duo" states this API is for **interactions and effects, not layout decisions** — layout should use reserved regions / arrangement APIs (below) instead of raw hinge angle. "Strike a Pose with Adaptive Layouts on iPhone Duo" is consistent with this (it points to the multiple-displays talk for hinge-driven interactions and covers layout separately via reserved regions/arrangements), but only the first talk states the interactions-not-layout rule explicitly — treat it as one clear statement, not two independent confirmations.
 
 **Design implications**
-- A design concept that uses continuous fold angle to *drive layout* (e.g., "the panel width scales smoothly with fold angle") is against Apple's own stated intent for this API, confirmed twice independently — reserve fold-angle-driven behavior for interaction/effect polish, and drive actual layout structure off size classes and reserved regions instead.
+- A design concept that uses continuous fold angle to *drive layout* (e.g., "the panel width scales smoothly with fold angle") is against Apple's stated intent for this API — reserve fold-angle-driven behavior for interaction/effect polish (following the pitch-bend example's shape: a normalized value derived from angle, only while partially open, reset otherwise), and drive actual layout structure off size classes and reserved regions instead.
 
 ---
 
@@ -258,6 +260,7 @@ let frames = regions.map(\.frame)
 **Design implications**
 - This is the programmatic counterpart to the "reserved regions" concept in [iphone-duo.md](iphone-duo.md) — a design spec that names those regions qualitatively can be implemented against this API rather than requiring engineering to hand-derive geometry per pose.
 - Querying inactive regions (e.g. the fold when flat) is a legitimate way to keep a layout decision (like grid column count) stable across a fold transition, rather than reacting only once the fold becomes active.
+- "Prepare Your App for iPhone Duo" separately names this same reserved-region concept as the tool for **building custom bars or edge-to-edge UI** that needs to use as much available space as possible without colliding with system UI — if a design calls for fully custom chrome (not a system nav/toolbar/tab bar), this API, not a hand-measured layout, is the intended mechanism.
 
 ---
 
@@ -271,35 +274,38 @@ NavigationStack {
     } secondary: {
         UpNextView()
     }
-    .arrangementViewStyle(.split)          // or: .split.axes(.horizontal), or .overlay
+    .arrangementViewStyle(.split)          // or: .split.axis(.horizontal), or .overlay
 }
 ```
 
 ```swift
-// UIKit
+// UIKit — root VC of a UINavigationController; primary/secondary set via
+// setViewController(_:for:); the axis is restricted via a UISplitArrangementType
+// passed to updateArrangement(_:) (exact call shape not fully specified in the
+// talk — treat this as the closest faithful paraphrase, not a verified signature)
 let arrangementVC = UIArrangementViewController()
 let navController = UINavigationController(rootViewController: arrangementVC)
 
 arrangementVC.setViewController(PlayerViewController(), for: .primary)
 arrangementVC.setViewController(UpNextViewController(), for: .secondary)
-arrangementVC.updateArrangement(.split.axes(.horizontal))
+arrangementVC.updateArrangement(UISplitArrangementType(axis: .horizontal))
 ```
 
-Reading z-index in an overlay arrangement (to switch between collapsed/expanded representations as fold state changes):
+Reading z-index in an overlay arrangement — the talk says to query this to detect front/back placement and switch between collapsed/expanded representations, using the "up next" view as its example (the specific `zIndex > 0` → collapsed mapping below is this skill's inference from that example, not a verbatim rule stated in the talk):
 
 ```swift
 // SwiftUI
 @Environment(\.overlayArrangementZIndex) private var zIndex: Int
-// zIndex > 0 → collapsed; otherwise → expanded
+// inferred from the demo: zIndex > 0 → treat as collapsed/behind; else expanded/front
 
 // UIKit
 let primaryState = arrangementVC.state(for: .primary)
-let collapsed = (primaryState?.zIndex ?? 0) > 0
+let collapsed = (primaryState?.zIndex ?? 0) > 0   // same inference as above
 ```
 
 **Design implications**
 - This is the concrete implementation of the "split arrangement / overlay arrangement" concepts in [iphone-duo.md](iphone-duo.md). A design spec calling for "split arrangement" or "overlay arrangement" maps directly to `.arrangementViewStyle(.split)` / `.arrangementViewStyle(.overlay)`.
-- `.axes(.horizontal)` (or `.vertical`) restricts a split to one axis; if the arrangement can't split along the restricted axis given the current aspect ratio, it falls back to showing only the primary view — a design should account for that single-view fallback state, not assume the split is always visible.
+- `.axis(.horizontal)` (or `.vertical`) restricts a split to one axis; if the arrangement can't split along the restricted axis given the current aspect ratio, it falls back to showing only the primary view — a design should account for that single-view fallback state, not assume the split is always visible.
 
 ---
 

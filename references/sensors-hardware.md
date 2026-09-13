@@ -27,13 +27,11 @@ Source: https://developer.apple.com/design/human-interface-guidelines/maps
 
 **Limitations**
 - Apple logo + legal attribution have fixed minimum padding (7pt sides, 10pt above/below) and must stay fixed to the map — cannot be hidden/permanently covered.
-- watchOS maps are **static snapshots only** — tapping hands off to the full Apple Maps app; limited to 5 annotations max, and content must fit without scrolling.
 - Guidance explicitly says not to visually clone Apple Maps' own styling in a custom map skin.
 
 **Design implications**
-- A watchOS map concept with live pan/zoom interaction is not feasible — design it as a static snapshot + handoff-to-Maps-app pattern instead.
 - Any map mockup must reserve fixed padding for the Apple logo/legal link — it cannot be design-cropped out.
 
 ---
 
-**Coverage gap**: a dedicated Haptics HIG page and a dedicated Camera HIG page both 404 on the current site (2025 restructure) and could not be independently retrieved. Camera *permission* behavior is partially covered under references/privacy-permissions.md. Don't state specific haptic pattern names/timing or custom-camera-UI rules as confirmed HIG guidance — flag as unverified if asked.
+**Coverage gap**: a dedicated Haptics HIG page 404s on the current site (2025 restructure) and could not be independently retrieved — don't state specific haptic pattern names/timing as confirmed HIG guidance, flag as unverified if asked. The general Camera HIG page is also gone (permission behavior is partially covered under [privacy-permissions.md](privacy-permissions.md)), but iPhone Duo's actual camera *API* surface — the dual front cameras, the Direction Coordinator, preview/rotation handling — is well covered separately in [camera.md](camera.md), sourced from Apple's own camera Tech Talk rather than the (gone) HIG page.

@@ -1,5 +1,5 @@
 # iPhone Duo (Foldable) — Design Fundamentals
-Sources: https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo (HIG page, added September 9, 2026), plus Apple's Sept 2026 Tech Talks — "Design for iPhone Duo," "Strike a Pose with Adaptive Layouts on iPhone Duo," and "Leverage Multiple Displays and Scenes on iPhone Duo" (transcripts reviewed directly, including their on-screen code samples).
+Sources: https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo (HIG page, added September 9, 2026), plus Apple's Sept 2026 Tech Talks — "Design for iPhone Duo," "Raise the Bar with iPhone Duo," "Strike a Pose with Adaptive Layouts on iPhone Duo," and "Leverage Multiple Displays and Scenes on iPhone Duo" (transcripts reviewed directly, including their on-screen code samples).
 
 iPhone Duo is Apple's foldable iPhone: dual displays (outer + inner), a front-facing camera on each display, and a central hinge that lets the device hold multiple poses. This file covers what's *specific to Duo* at the design-pattern level; for the engineering/API surface behind these patterns, see [xcode-development.md](xcode-development.md) (core layout/scene APIs), [vertical-toolbars.md](vertical-toolbars.md) (the full toolbar/tab-bar API), and [camera.md](camera.md) (dual front-camera APIs). For everything not called out anywhere in this skill, standard iOS design patterns apply — see [standard-iphone-vs-duo.md](standard-iphone-vs-duo.md) for the explicit carries-over/changes breakdown.
 
@@ -23,7 +23,7 @@ iPhone Duo is Apple's foldable iPhone: dual displays (outer + inner), a front-fa
 ## Device Poses
 
 **Capabilities**
-- Supports book-fold (partially folded, held like a book), flat/laptop-like (open, inner display facing you, set on a table), stand (standing on its own, resting on its hinge "head"), in addition to fully closed (outer display only) and fully open (inner display, flat).
+- Supports book-fold (partially folded, held like a book), laptop (partially folded, lower half set on a table, inner display facing you), and stand/tent (standing on its own, resting on its "head"), in addition to fully closed (outer display only) and fully open/flat (inner display, laid flat).
 
 **Limitations**
 - "Supporting the device's various poses doesn't mean designing a custom layout for each one" — Apple explicitly discourages a per-pose bespoke-layout strategy.
@@ -41,7 +41,7 @@ iPhone Duo is Apple's foldable iPhone: dual displays (outer + inner), a front-fa
 **Capabilities / Limitations** — four regions structure available space and must be treated as off-limits to arbitrary content:
 1. **Outer front-facing camera** — always present on the outer display; expands to accommodate Live Activities.
 2. **Inner front-facing camera** — present only once active, but reserved the moment it can activate.
-3. **Folding region** — space around the hinge, conditional on current fold/pose state. Queryable in code as an **occlusion or division region** — see below.
+3. **Folding region** — space around the hinge, conditional on current fold/pose state. Queryable in code as a **division region** — see below.
 4. **System components** — status bar/home indicator-equivalents, which adapt to the above automatically.
 
 Programmatically, these map to two kinds of **reserved regions** (full API detail in [xcode-development.md](xcode-development.md)):
@@ -148,8 +148,10 @@ Programmatically, these map to two kinds of **reserved regions** (full API detai
 **Design implications**
 - A toolbar/tab-bar design that assumes a fixed horizontal strip along the bottom (unmodified from a standard iPhone design) needs explicit rework for Duo's vertical control placement — this is one of the highest-likelihood "looks done on iPhone, breaks on Duo" gaps to check for.
 - Order toolbar items with primary navigation (Back/Close) at the top of the vertical axis, then prominent actions (Done) — this ordering is prescriptive, not just a suggestion.
-- Two named exceptions to "compress to overflow": in a navigation-focused experience, the toolbar compresses first so the tab bar/primary destinations stay visible (this is the *default*); in a task-oriented experience, the tab bar compresses first to preserve toolbar actions — scope which one applies per screen rather than applying one rule everywhere.
-- A small number of layouts are explicitly allowed to break the vertical-controls model and span the full display width for an immersive, visual interface (Apple's own named example: Calculator, a "bottom-heavy single-page app") — this is a deliberate, named exception, not a loophole to over-apply. Control-sparse sheets (e.g. one with only a single close button) are a second named case where disabling the vertical bar is preferred.
+- Two compression modes for overflow, not a single rule: in a navigation-focused experience, the toolbar compresses first so the tab bar/primary destinations stay visible (this is the *unconfigured default* — no code needed); in a task-oriented experience, the tab bar compresses first to preserve toolbar actions (requires opting in — see [vertical-toolbars.md](vertical-toolbars.md)) — scope which one applies per screen rather than applying one rule everywhere.
+- A small number of layouts are explicitly allowed to disable the vertical bar entirely and let content span the full display width — Apple's own named example is Calculator, described as a "single-page app with a bottom-heavy layout" where a horizontal layout lets content fully expand. This is a deliberate, named exception (distinct from the content-alignment choice below), not a loophole to over-apply. Control-sparse sheets (e.g. one with only a single close button) are a second named case where disabling the vertical bar is preferred.
+
+**Content alignment on the outer display** (a separate decision from whether the vertical bar exists at all): most content needs an **offset** so it isn't hidden behind the side controls — aligning to the horizontal safe area insets makes this happen automatically. Some UI can still **center on the full display with no offset**, which works for immersive, highly visual interfaces that don't scroll — but only when you're sure interactive elements won't be blocked by the controls on the right. A third, mixed approach: a full-width background image or header, with scrollable foreground content that *is* inset — as long as every interactive element lives inside that scrollable, inset area so nothing ends up covered.
 
 ---
 

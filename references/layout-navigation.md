@@ -27,8 +27,7 @@ Source: https://developer.apple.com/design/human-interface-guidelines/layout
 - Layout guides + safe areas exist specifically so content avoids system chrome and hardware cutouts (Dynamic Island, camera housing, home indicator) automatically.
 
 **Limitations**
-- iOS/iPadOS layout must be driven by size class, not device type or orientation — designing "for iPhone 15" vs. "for iPad" as fixed dimensions is the wrong mental model; the same view can be compact or regular depending on multitasking/Split View state.
-- tvOS requires 60pt top/bottom and 80pt side insets; visionOS requires ≥60pt spacing between focusable controls; watchOS UI should limit to 2-3 side-by-side controls.
+- iOS/iPadOS layout must be driven by size class, not device type or orientation — designing "for iPhone 15" vs. "for iPad" as fixed dimensions is the wrong mental model; the same view can be compact or regular depending on multitasking/Split View state. On iPhone Duo specifically, fold state is an additional driver of size class alongside device/orientation — see [iphone-duo.md](iphone-duo.md).
 
 **Design implications**
 - Never hardcode pixel layouts to a specific iPhone model; design against compact/regular breakpoints.

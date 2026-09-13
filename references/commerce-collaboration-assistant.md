@@ -25,16 +25,14 @@ Source: https://developer.apple.com/design/human-interface-guidelines/shareplay
 
 **Capabilities**
 - Synchronous shared activities across devices, initiated from in-app controls, FaceTime calls, or shared links; supports Picture-in-Picture for shared video on iOS/iPadOS/macOS.
-- visionOS: spatial Personas, defined spatial templates (Side-by-Side, Surround, Conversational, Custom up to 5 seats) for arranging participants relative to shared content.
 
 **Limitations**
 - SharePlay is fundamentally synchronous — asynchronous collaboration (contribute-on-own-schedule) requires a separate save/share-after-session mechanism, it isn't native to the feature.
-- visionOS custom seat templates cap at 5 spatial Personas; seats must be spaced ≥1 meter apart.
 - Naming/trademark constraint: "SharePlay" must be used only as a noun or verb exactly as specified — no invented forms like "SharePlayed."
 
 **Design implications**
 - A SharePlay concept for asynchronous/offline collaborative editing needs an explicit separate persistence/share mechanism layered on top — it's not something SharePlay itself provides.
-- Multi-user spatial layouts on visionOS should be designed against the fixed template vocabulary (or a custom template respecting the 1-meter/5-seat constraints), not arbitrary freeform seating.
+- On iPhone Duo, SharePlay's PiP video support is the relevant intersection point with the system's own PiP-pinning behavior — see [iphone-duo.md](iphone-duo.md).
 
 ---
 

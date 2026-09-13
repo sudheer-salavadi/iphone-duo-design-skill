@@ -72,12 +72,7 @@ class AVCaptureVideoPreviewLayer {
 ```
 - Use `videoGravity` to decide whether the preview fills the display or is offset with extra space around it (e.g. to group controls in the remaining area) — when streaming the rear camera's full field of view on the inner display, there's extra display space to make this choice with.
 
-```swift
-class AVCaptureDevice {
-    var dynamicAspectRatio: AVCaptureDevice.AspectRatio? { get }
-}
-```
-- When streaming from the ultrawide **front** cameras (square sensor), `dynamicAspectRatio` can select a **landscape** aspect-ratio crop of the square sensor to fill the wider inner display. Related background: "Support the Center Stage Front Camera in Your iOS App" (WWDC26).
+- When streaming from the ultrawide **front** cameras (square sensor), a `dynamicAspectRatio` property on `AVCaptureDevice` can be **set** to select a **landscape** aspect-ratio crop of the square sensor, to fill the wider inner display — it's a control you configure, not a read-only reported value (the talk's exact property type wasn't fully specified; treat the name and purpose as confirmed, the declaration shape as illustrative only). Related background: "Support the Center Stage Front Camera in Your iOS App" (WWDC26).
 
 ---
 

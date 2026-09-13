@@ -4,14 +4,13 @@
 Source: https://developer.apple.com/design/human-interface-guidelines/multitasking
 
 **Capabilities**
-- iOS: Picture-in-Picture for video/FaceTime; app switcher.
+- iOS: Picture-in-Picture for video/FaceTime; app switcher. **On iPhone Duo, this general model is extended significantly** — mandatory system-level split-view multitasking (every app participates), a video-pinning layout, and multi-window/scene-accessory support are all layered on top of this baseline; see [iphone-duo.md](iphone-duo.md) and [xcode-development.md](xcode-development.md) for the Duo-specific behavior rather than treating standard iPhone's "PiP + app switcher" as the full picture.
 - App can complete user-initiated background work (downloads, video processing) after the user backgrounds it.
 
 **Limitations**
 - "Every app needs to work well with multitasking" — apps must always be prepared to save/restore state because the system can suspend/background them at any time, unpredictably.
 - Audio: primary interruptions (music/podcasts) pause indefinitely; secondary interruptions (notifications, turn-by-turn GPS) should duck volume then resume — apps don't get to dictate arbitrary custom interruption behavior.
 - Notifications should be used sparingly for background task completion — not for routine background work.
-- watchOS: multitasking (in this sense) is not supported.
 
 **Design implications**
 - Any design that assumes an app "stays alive" and mid-task state persists indefinitely in the background is not technically grounded — always design an explicit state-restore path.

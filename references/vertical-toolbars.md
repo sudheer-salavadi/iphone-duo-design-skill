@@ -88,7 +88,7 @@ Horizontal bars have fixed height/flexible width; **vertical bars have flexible 
 **Axis-behavior override API** — for the cases where the default content-based inference isn't right:
 
 ```swift
-// SwiftUI — force a custom view into the vertical bar (e.g. a compass view)
+// SwiftUI — opt a custom view into vertical placement (e.g. a compass view)
 .toolbar {
     ToolbarItem {
         CompassView()
@@ -151,12 +151,11 @@ Other notes: a vertical bar has no scroll-edge effect by default but does have a
 
 Overflow pressure is higher on the outer display in landscape (less vertical space), and increases further when competing UI appears (keyboard, Picture-in-Picture in open portrait).
 
-**Toolbar vs. tab bar — which compresses first**:
+**Toolbar vs. tab bar — which compresses first**: the **unconfigured default** is tuned for navigation-focused experiences (e.g. a podcast view) — the **toolbar compresses first** so the tab bar's primary destinations stay accessible, with no code needed. For task-oriented experiences (e.g. Games), override this so the **tab bar compresses first** instead, preserving toolbar actions:
 
 ```swift
-// SwiftUI — default behavior for navigation-focused experiences
-// (e.g. a podcast view): the toolbar compresses first so primary
-// destinations (tab bar) remain accessible
+// SwiftUI — opt a task-oriented view into "prefer toolbar items visible,
+// compress the tab bar first instead" (the opposite of the default)
 TabView {
     Tab("Recents", systemImage: "clock") {
         ContentView()
@@ -168,7 +167,7 @@ TabView {
 navigationItem.verticalBarCompressionBehavior = .prefersBarItems
 ```
 
-For task-oriented experiences (e.g. Games), the default flips: the tab bar compresses first to preserve toolbar actions. Configure this per-view rather than assuming one rule applies everywhere.
+Configure this per-view rather than assuming one rule applies everywhere — don't apply `.prefersToolbarItems` to a navigation-focused screen, since that's already the default behavior with no configuration needed.
 
 **Consolidating a custom overflow menu into the system-managed one**:
 

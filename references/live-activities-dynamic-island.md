@@ -23,3 +23,5 @@ Source: https://developer.apple.com/design/human-interface-guidelines/live-activ
 - Alerting should be reserved for genuinely essential updates — avoid "notify on every update" design patterns that duplicate push notifications.
 
 **Coverage gap**: dedicated Lock Screen / Always-On Display / StandBy HIG pages 404 on the current site; StandBy specifics above are the only ones recoverable, via this page. Don't assume more precision than what's listed here for AOD-specific rendering.
+
+**iPhone Duo note**: everything above describes the standard-iPhone Dynamic Island. On Duo's outer display, the island behaves differently and isn't captured by these dimensions — it sits within the vertical control rail and **expands vertically** as Live Activities arrive, sharing that rail with app toolbar/tab-bar items (and collapsing into the same overflow menu under space pressure). See [iphone-duo.md](iphone-duo.md) and [vertical-toolbars.md](vertical-toolbars.md) for the Duo-specific behavior — don't apply the compact/minimal/expanded pixel values above to a Duo outer-display design without checking those files first.

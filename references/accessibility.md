@@ -4,11 +4,11 @@ Source: https://developer.apple.com/design/human-interface-guidelines/accessibil
 **Capabilities**
 - VoiceOver screen reader, Dynamic Type scaling, Voice Control, Switch Control, Assistive Access, Reduce Motion — all system-level and free to integrate with via standard components.
 
-**Limitations (concrete, testable numbers)**
-- Dynamic Type: must support up to **200% enlargement on iOS/iPadOS/visionOS** (140% on watchOS).
-- Default/minimum font sizes: iOS/iPadOS 17pt default / 11pt minimum; macOS 13/10pt; tvOS 29/23pt; visionOS 17/12pt; watchOS 16/12pt.
+**Limitations (concrete, testable numbers — iOS/iPadOS, the platform iPhone Duo runs)**
+- Dynamic Type: must support up to **200% enlargement**.
+- Default/minimum font sizes: **17pt default / 11pt minimum**.
 - Color contrast (WCAG AA): body text ≤17pt needs **4.5:1**; text ≥18pt or bold needs **3:1**.
-- Minimum control/hit-target size: iOS/iPadOS **44×44pt** (28×28pt absolute minimum); macOS 28×28 (20×20 min); tvOS 66×66 (56×56 min); visionOS 60×60 (28×28 min); watchOS 44×44 (28×28 min).
+- Minimum control/hit-target size: **44×44pt** (28×28pt absolute minimum).
 - Spacing: ~12pt padding around bezeled controls, 24pt around non-bezeled elements.
 
 **Design implications**
